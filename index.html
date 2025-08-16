@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de Cumpleaños</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            color: white;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://cdn.glitch.global/1c857795-c836-4dbc-94a4-bc989695d345/wallpaper_minecraft_caves_cliffs(part1)_2058x1440.png?v=1725116520066');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #contador {
+            font-size: 50px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px black;
+            margin-bottom: 10px;
+        }
+        #año {
+            font-size: 20px;
+            margin-top: -15px;
+        }
+        #felicitacion {
+            display: none;
+            font-size: 60px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px black;
+            color: #FFD700;
+        }
+        .confeti {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .confeti div {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            animation: caer 5s linear infinite;
+        }
+        @keyframes caer {
+            from {
+                transform: translateY(-100vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="contador">
+      <h3>
+        ¿Cuanto falta para el cumple de Erik?
+      </h3>
+        <span id="dias"></span>d : <span id="horas"></span>h : <span id="minutos"></span>m : <span id="segundos"></span>s
+        <p>
+          
+      </p>
+      <div id="año"></div>
+    </div>
+    <div id="felicitacion">¡Feliz cumpleaños a Erik!</div>
+    <div class="confeti" id="confetiContainer"></div>
+
+    <script>
+        function obtenerFechaCumpleaños() {
+            const ahora = new Date();
+            let fechaCumpleaños = new Date(`Sep 13, ${ahora.getFullYear()} 07:13:00`);
+            if (ahora > fechaCumpleaños) {
+                // Si la fecha de cumpleaños ya pasó este año, establecemos la próxima para el siguiente año
+                fechaCumpleaños.setFullYear(fechaCumpleaños.getFullYear() + 1);
+            }
+            return fechaCumpleaños;
+        }
+
+        function actualizarContador() {
+            const ahora = new Date().getTime();
+            const fechaCumpleaños = obtenerFechaCumpleaños().getTime();
+            const veinteMinutos = 20 * 60 * 1000;
+            let distancia = fechaCumpleaños - ahora;
+
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+            document.getElementById("dias").innerText = dias;
+            document.getElementById("horas").innerText = horas;
+            document.getElementById("minutos").innerText = minutos;
+            document.getElementById("segundos").innerText = segundos;
+            document.getElementById("año").innerText = "Año " + new Date().getFullYear();
+
+            if (distancia < 0 && distancia > -veinteMinutos) {
+                document.body.style.backgroundColor = "white";
+                document.getElementById("felicitacion").style.display = "block";
+                document.getElementById("contador").style.display = "none";
+                crearConfeti();
+            } else if (distancia <= -veinteMinutos) {
+                // Establece la siguiente fecha de cumpleaños después de la felicitación
+                const siguienteCumpleaños = obtenerFechaCumpleaños();
+                distancia = siguienteCumpleaños - ahora;
+                document.body.style.backgroundImage = "url('https://cdn.glitch.global/1c857795-c836-4dbc-94a4-bc989695d345/wallpaper_minecraft_caves_cliffs(part1)_2058x1440.png?v=1725116520066')";
+                document.body.style.backgroundColor = "";
+                document.getElementById("felicitacion").style.display = "none";
+                document.getElementById("contador").style.display = "block";
+                setTimeout(actualizarContador, 1000);
+            } else {
+                setTimeout(actualizarContador, 1000);
+            }
+        }
+
+        function crearConfeti() {
+            const confetiContainer = document.getElementById('confetiContainer');
+            confetiContainer.innerHTML = '';
+            for (let i = 0; i < 150; i++) {
+                const confeti = document.createElement('div');
+                confeti.style.backgroundColor = confetiColors[Math.floor(Math.random() * confetiColors.length)];
+                confeti.style.left = Math.random() * 100 + 'vw';
+                confeti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                confeti.style.animationDelay = Math.random() * 5 + 's';
+                confetiContainer.appendChild(confeti);
+            }
+        }
+
+        const confetiColors = ['#FFD700', '#FF5733', '#C70039', '#900C3F', '#581845', '#DAF7A6', '#FFC300', '#FF5733'];
+
+        actualizarContador();
+    </script>
+</body>
+</html>
